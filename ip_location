@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+import ipaddress
+import json
+import os
+import sys
+
+import requests
+
+# Check if the API key is set as an environment variable
+access_key = os.environ.get("IP_LOCATION_API_KEY")
+if not access_key:
+    raise SystemExit("Please set the IP_LOCATION_API_KEY environment variable.")
+
+# Accept a single command line argument
+try:
+    (arg,) = sys.argv[1:]
+except ValueError:
+    raise SystemExit("Usage: ip_location <ip_address>")
+
+# Validate the IP address value to avoid malformed queries to the IPStack API
+# for security.
+try:
+    ip_address = ipaddress.ip_address(arg)
+except ValueError as err:
+    raise SystemExit(err)
+
+url = "http://api.ipstack.com/" + str(ip_address)
+
+response = requests.get(url, params={"access_key": access_key})
+response.raise_for_status()
+data = response.json()
+
+try:
+    latitude = data["latitude"]
+    longitude = data["longitude"]
+except KeyError:
+    # Print the json for diagnostics
+    json.dump(data, sys.stderr, indent=2)
+    raise SystemExit("\nFailed to retrieve location: %s" % response.url)
+
+# Output plain text that is both easy to read and parse with unix tools.
+print("latitude", latitude, sep="=")
+print("longitude", longitude, sep="=")

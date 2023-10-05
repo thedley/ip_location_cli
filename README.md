@@ -15,9 +15,9 @@ export IP_LOCATION_API_KEY=<api_key>
 
 Replace `<api_key>` with your actual IPStack API access key.
 
-## Usage
+## CLI Usage
 
-The script can be run directly on Mac or Linux provided Python 3 is
+The script can be run directly on Mac or Linux provided Python 3
 and the requests module is available.
 
 Run the CLI program as follows:
